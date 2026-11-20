@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="es-AR" data-modo="claro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Panel del local</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --acento:#b4532a; --bg:#f6f5f3; --card:#fff; --ink:#1c1b19; --ink-2:#5c5953; --ink-3:#8d8981; --line:#e6e3de;
+    --ok:#1f9d55; --mal:#c83a3a; --r:14px; --f:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f);-webkit-font-smoothing:antialiased}
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  [hidden]{display:none!important}
+  h1,h2,h3{margin:0;line-height:1.15}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  :focus-visible{outline:2px solid var(--acento);outline-offset:2px;border-radius:6px}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+
+  .demo{background:#1c1b19;color:#f3f1ec;font-size:13px;font-weight:600;text-align:center;padding:8px 12px}
+  .demo button{background:none;border:1px solid rgba(255,255,255,.35);color:inherit;border-radius:8px;padding:2px 8px;margin-left:8px;font-size:12px}
+
+  /* acceso */
+  .acceso{min-height:100vh;display:grid;place-items:center;padding:20px}
+  .acceso .box{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}
+  .acceso h1{font-size:22px}
+  .acceso p{color:var(--ink-2);margin:6px 0 18px}
+
+  /* barra */
+  .top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;gap:10px;height:58px}
+  .top b{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tabs{display:flex;gap:4px;margin-left:auto}
+  .tab{border:0;background:none;border-radius:10px;padding:8px 12px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+  .tab[aria-selected=true]{background:var(--ink);color:#fff}
+  .tab .n{background:var(--mal);color:#fff;border-radius:99px;font-size:11.5px;min-width:19px;height:19px;display:grid;place-items:center;padding:0 5px}
+  .mas{display:flex;gap:6px;margin-left:6px}
+  .lnk{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 11px;font-weight:600;font-size:13.5px;text-decoration:none;white-space:nowrap}
+
+  main{padding:20px 0 80px}
+  .cab{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .cab h2{font-size:22px;margin-right:auto}
+  .filtros{display:flex;gap:6px;flex-wrap:wrap}
+  .filtro{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:6px 12px;font-weight:700;font-size:13px;color:var(--ink-2)}
+  .filtro[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+  .btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 14px;font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+  .btn.pri{background:var(--acento);border-color:var(--acento);color:#fff}
+  .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+  .btn.mal{color:var(--mal)}
+  .btn.chico{padding:6px 10px;font-size:13px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+  .vacio{color:var(--ink-3);text-align:center;padding:40px 10px}
+  .grid-ped{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .ped{display:flex;flex-direction:column;gap:10px}
+  .ped.nuevo{border-color:var(--acento);box-shadow:0 0 0 3px color-mix(in srgb,var(--acento) 15%,transparent)}
+  .ped .l1{display:flex;align-items:center;gap:8px}
+  .ped .cod{font-weight:800;font-size:18px;letter-spacing:.06em}
+  .ped .hora{color:var(--ink-3);font-size:13px;margin-left:auto}
+  .est{font-size:11.5px;font-weight:800;border-radius:99px;padding:3px 9px;text-transform:uppercase;letter-spacing:.04em}
+  .est.pendiente{background:#fff1d6;color:#8a5a00}
+  .est.aprobado{background:#e1f5e9;color:#17703f}
+  .est.entregado{background:#e8eef9;color:#2c4f8f}
+  .est.rechazado{background:#fbe5e5;color:#9b2a2a}
+  .ped ul{margin:0;padding:0;list-style:none;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:8px 0}
+  .ped li{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:2px 0}
+  .ped li small{display:block;color:var(--ink-3)}
+  .ped .meta{font-size:14px;color:var(--ink-2);display:grid;gap:2px}
+  .ped .meta b{color:var(--ink)}
+  .ped .tot{display:flex;justify-content:space-between;font-weight:800}
+  .ped .acc{display:flex;gap:8px;flex-wrap:wrap}
+  .ped .acc .btn{flex:1}
+
+  .bloque{margin-bottom:22px}
+  .bloque h3{font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .bloque h3 .chico{font-weight:600;color:var(--ink-3);font-size:13px}
+  .filas{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .fila{display:grid;grid-template-columns:52px 1fr auto auto;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+  .fila:first-child{border-top:0}
+  .fila.off{opacity:.55}
+  .mini{width:52px;height:52px;border-radius:10px;background:var(--bg);overflow:hidden;display:grid;place-items:center;color:var(--ink-3);font-size:11px}
+  .mini img{width:100%;height:100%;object-fit:cover}
+  .fila b{display:block;font-weight:700}
+  .fila small{color:var(--ink-3)}
+  .sw{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+  .sw input{appearance:none;width:38px;height:22px;border-radius:99px;background:#d6d2cb;position:relative;cursor:pointer;transition:background .15s;margin:0}
+  .sw input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .sw input:checked{background:var(--ok)}
+  .sw input:checked::after{transform:translateX(16px)}
+  .cat-acc{display:flex;gap:4px;margin-left:auto}
+  .ico{border:1px solid var(--line);background:var(--card);border-radius:8px;width:32px;height:32px;display:grid;place-items:center;font-size:14px}
+
+  /* formularios */
+  .form{display:grid;gap:14px}
+  .dos{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .tres{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  label.c{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:var(--ink-2)}
+  .c input,.c textarea,.c select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 11px;font-size:15px;font-weight:400;color:var(--ink);width:100%}
+  .c textarea{min-height:70px;resize:vertical}
+  .c small{font-weight:500;color:var(--ink-3)}
+  fieldset{border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:0;background:var(--card);display:grid;gap:14px}
+  legend{font-weight:800;padding:0 6px}
+  .foto-campo{display:flex;align-items:center;gap:12px}
+  .foto-campo .prev{width:84px;height:84px;border-radius:12px;background:var(--bg);border:1px dashed var(--line);overflow:hidden;display:grid;place-items:center;color:var(--ink-3);font-size:12px;flex:none}
+  .foto-campo .prev img{width:100%;height:100%;object-fit:cover}
+  .foto-campo .prev.logo img{object-fit:contain}
+  .turno{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:12px}
+  .dias{display:flex;gap:4px;flex-wrap:wrap}
+  .dias label{display:flex}
+  .dias input{position:absolute;opacity:0;pointer-events:none}
+  .dias span{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer}
+  .dias input:checked+span{background:var(--ink);border-color:var(--ink);color:#fff}
+  .dias input:focus-visible+span{outline:2px solid var(--acento)}
+  .turno input[type=time]{border:1px solid var(--line);border-radius:10px;padding:7px 8px}
+  .colores{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .colores button{width:32px;height:32px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+  .colores button[aria-pressed=true]{box-shadow:0 0 0 2px var(--ink)}
+  .colores input[type=color]{width:40px;height:34px;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--card)}
+  .barra-guardar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:16px 0 calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:flex-end}
+
+  /* ventana para editar plato */
+  .velo{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;display:grid;place-items:center;padding:16px}
+  .modal{background:var(--card);border-radius:18px;width:100%;max-width:560px;max-height:92vh;overflow:auto}
+  .modal .mc{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:1}
+  .modal .mb{padding:18px}
+  .modal .mf{display:flex;gap:8px;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--card)}
+  .seguro{display:inline-flex;gap:6px;align-items:center;font-size:13px;font-weight:700}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:#fff;font-weight:700;font-size:14px;padding:11px 16px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:90;max-width:calc(100vw - 32px);text-align:center}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast.mal{background:var(--mal)}
+
+  @media (max-width:720px){
+    .top .wrap{height:auto;flex-wrap:wrap;padding-top:10px;padding-bottom:8px}
+    .tabs{order:3;width:100%;margin:0;overflow-x:auto}
+    .mas{margin-left:auto}
+    .dos,.tres{grid-template-columns:1fr}
+    .fila{grid-template-columns:44px 1fr auto;gap:10px}
+    .fila .mini{width:44px;height:44px}
+    .fila .sw span{display:none}
+    .fila .edit{grid-column:3;grid-row:1}
+    .fila .sw{grid-column:2;justify-self:start}
+    .turno{grid-template-columns:1fr 1fr auto}
+    .turno .dias{grid-column:1 / -1}
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="datos.js"></script>
+</head>
+<body>
+<div class="demo" id="demo" hidden>Modo demo: los cambios se guardan solo en este navegador. <button id="reiniciar">Volver a la carta de ejemplo</button></div>
+
+<!-- acceso -->
+<section class="acceso" id="acceso" hidden>
+  <form class="box form" id="fAcceso">
+    <div><h1 id="accT">Entrar al panel</h1><p id="accP">Con el email y la clave del local.</p></div>
+    <label class="c">Email<input type="email" id="aEmail" autocomplete="username" required></label>
+    <label class="c">Clave<input type="password" id="aClave" autocomplete="current-password" minlength="6" required></label>
+    <button class="btn pri" id="aBtn">Entrar</button>
+    <button type="button" class="btn" id="aCambiar">Todavía no tengo cuenta: crearla</button>
+  </form>
+</section>
+
+<!-- sin permiso -->
+<section class="acceso" id="sinPermiso" hidden>
+  <div class="box form">
+    <div><h1>Tu cuenta todavía no tiene acceso</h1><p>Pedile al dueño que te dé acceso desde el panel, con tu email: <b id="spEmail"></b></p></div>
+    <div class="card" style="background:var(--bg)">
+      <p style="margin:0 0 10px;color:var(--ink-2)">¿Sos el dueño y es la primera vez que se usa este panel?</p>
+      <label class="c">Tu nombre<input id="spNombre" autocomplete="name"></label>
+      <button class="btn pri" id="spReclamar" style="margin-top:10px;width:100%">Soy el dueño: activar el panel</button>
+    </div>
+    <button class="btn" id="spSalir">Salir</button>
+  </div>
+</section>
+
+<!-- panel -->
+<div id="panel" hidden>
+  <header class="top">
+    <div class="wrap">
+      <b id="tNombre">Panel</b>
+      <nav class="tabs" role="tablist">
+        <button class="tab" role="tab" data-t="pedidos" aria-selected="true">Pedidos <span class="n" id="nPend" hidden>0</span></button>
+        <button class="tab" role="tab" data-t="carta" aria-selected="false">Carta</button>
+        <button class="tab" role="tab" data-t="local" aria-selected="false">El local</button>
+      </nav>
+      <div class="mas"><a class="lnk" href="./" target="_blank" rel="noopener">Ver la web</a><button class="lnk" id="salir">Salir</button></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="v-pedidos">
+      <div class="cab"><h2>Pedidos</h2>
+        <div class="filtros" id="filtros">
+          <button class="filtro" data-e="pendiente" aria-pressed="true">Pendientes</button>
+          <button class="filtro" data-e="aprobado" aria-pressed="false">Aprobados</button>
+          <button class="filtro" data-e="entregado" aria-pressed="false">Entregados</button>
+          <button class="filtro" data-e="rechazado" aria-pressed="false">Rechazados</button>
+          <button class="filtro" data-e="" aria-pressed="false">Todos</button>
+        </div>
+      </div>
+      <div class="grid-ped" id="pedidos"></div>
+    </section>
+
+    <section id="v-carta" hidden>
+      <div class="cab"><h2>Carta</h2><button class="btn" id="nuevaCat">+ Categoría</button><button class="btn pri" id="nuevoPlato">+ Plato</button></div>
+      <div id="carta"></div>
+    </section>
+
+    <section id="v-local" hidden>
+      <div class="cab"><h2>El local</h2></div>
+      <form class="form" id="fLocal" autocomplete="off">
+        <fieldset><legend>Datos</legend>
+          <div class="dos">
+            <label class="c">Nombre del local<input name="nombre" required maxlength="60"></label>
+            <label class="c">Frase corta<input name="bajada" maxlength="90" placeholder="Ej: Pastas caseras desde 1990"></label>
+          </div>
+          <div class="dos">
+            <label class="c">Dirección<input name="direccion" maxlength="120"></label>
+            <label class="c">Link de Google Maps <small>(opcional)</small><input name="mapa" type="url" maxlength="300"></label>
+          </div>
+          <div class="tres">
+            <label class="c">WhatsApp que recibe los pedidos<input name="whatsapp" inputmode="tel" placeholder="5491112345678"><small>Con 549 y código de área, sin espacios.</small></label>
+            <label class="c">Teléfono<input name="telefono" inputmode="tel"></label>
+            <label class="c">Instagram<input name="instagram" placeholder="@tulocal"></label>
+          </div>
+          <label class="c">Aviso destacado <small>(aparece arriba de todo; dejalo vacío para no mostrar nada)</small><input name="aviso" maxlength="160" placeholder="Ej: Este domingo cerramos por feriado"></label>
+        </fieldset>
+
+        <fieldset><legend>Imagen</legend>
+          <div class="dos">
+            <div class="c">Logo <small>(mejor PNG con fondo transparente)</small>
+              <div class="foto-campo"><div class="prev logo" id="prevLogo">Sin logo</div><div style="display:grid;gap:6px"><label class="btn chico">Subir<input type="file" accept="image/*" class="sr" data-img="logo"></label><button type="button" class="btn chico mal" data-quitar="logo">Quitar</button></div></div>
+            </div>
+            <div class="c">Foto de portada <small>(horizontal: el local o un plato)</small>
+              <div class="foto-campo"><div class="prev" id="prevPortada">Sin foto</div><div style="display:grid;gap:6px"><label class="btn chico">Subir<input type="file" accept="image/*" class="sr" data-img="portada"></label><button type="button" class="btn chico mal" data-quitar="portada">Quitar</button></div></div>
+            </div>
+          </div>
+          <div class="c">Color principal
+            <div class="colores" id="colores"></div>
+          </div>
+          <div class="dos">
+            <label class="c">Fondo<select name="modo"><option value="claro">Claro</option><option value="oscuro">Oscuro</option></select></label>
+            <label class="c">Letra<select name="fuente"><option value="moderna">Moderna</option><option value="clasica">Clásica</option><option value="redonda">Redondeada</option></select></label>
+          </div>
+        </fieldset>
+
+        <fieldset><legend>Horarios</legend>
+          <div id="turnos" style="display:grid;gap:8px"></div>
+          <button type="button" class="btn chico" id="masTurno" style="justify-self:start">+ Agregar horario</button>
+          <small style="color:var(--ink-3)">Si abren a la mañana y a la noche, cargá dos horarios. Si cierran después de medianoche, poné la hora igual (ej: 20:00 a 01:00).</small>
+        </fieldset>
+
+        <fieldset><legend>Pedidos</legend>
+          <div class="dos">
+            <label class="sw"><input type="checkbox" name="aceptaRetiro"> Retiro en el local</label>
+            <label class="sw"><input type="checkbox" name="aceptaEnvios"> Envío a domicilio</label>
+          </div>
+          <div class="dos">
+            <label class="c">Costo del envío ($)<input name="costoEnvio" type="number" min="0" step="1"></label>
+            <label class="c">Pedido mínimo ($) <small>(0 = sin mínimo)</small><input name="pedidoMinimo" type="number" min="0" step="1"></label>
+          </div>
+          <label class="c">Info de envíos<input name="envios" maxlength="200" placeholder="Ej: Hasta 3 km. Demora 40 a 60 minutos."></label>
+          <label class="c">Formas de pago <small>(separadas por coma)</small><input name="pagos" maxlength="200" placeholder="Efectivo, Transferencia, Mercado Pago"></label>
+        </fieldset>
+
+        <fieldset id="fsAccesos" hidden><legend>Accesos al panel</legend>
+          <p style="margin:0;color:var(--ink-2)">Para que otra persona (un encargado) pueda entrar: primero tiene que crear su cuenta en este panel. Después ponés su email acá.</p>
+          <div class="dos"><label class="c">Email<input id="accEmail" type="email"></label><label class="c">Nombre<input id="accNombre"></label></div>
+          <button type="button" class="btn" id="darAcceso" style="justify-self:start">Dar acceso</button>
+        </fieldset>
+
+        <div class="barra-guardar"><button class="btn pri" id="guardarLocal">Guardar cambios</button></div>
+      </form>
+    </section>
+  </main>
+</div>
+
+<div class="velo" id="velo" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const { plata, esc, DIAS_C } = Resto.util;
+  let D = null, N = null, pestaña = 'pedidos', filtro = 'pendiente', vistos = new Set(), primera = true, quitarEscucha = null;
+
+  let tt;
+  function toast(m, mal){ const t = $('#toast'); t.textContent = m; t.className = 'toast on' + (mal ? ' mal' : ''); clearTimeout(tt); tt = setTimeout(() => t.className = 'toast', mal ? 4200 : 2400); }
+  const intentar = async (fn, ok) => { try { const r = await fn(); if (ok) toast(ok); return r; } catch (e) { toast(e.message || 'Algo salió mal', true); throw e; } };
+
+  /* ---------- acceso ---------- */
+  let modoCrear = false;
+  async function arrancar(){
+    $('#demo').hidden = Resto.modo !== 'demo';
+    const s = await Resto.sesion();
+    $('#acceso').hidden = $('#sinPermiso').hidden = $('#panel').hidden = true;
+    if (!s) { $('#acceso').hidden = false; return; }
+    let admin = false;
+    try { admin = await Resto.esAdmin(); } catch (e) { toast(e.message, true); }
+    if (!admin) { $('#spEmail').textContent = s.user ? s.user.email : ''; $('#sinPermiso').hidden = false; return; }
+    $('#panel').hidden = false;
+    $('#fsAccesos').hidden = Resto.modo === 'demo';
+    await recargar();
+    cargarPedidos();
+    if (quitarEscucha) quitarEscucha();
+    quitarEscucha = Resto.escucharPedidos(() => cargarPedidos());
+  }
+  $('#aCambiar').onclick = () => {
+    modoCrear = !modoCrear;
+    $('#accT').textContent = modoCrear ? 'Crear cuenta' : 'Entrar al panel';
+    $('#accP').textContent = modoCrear ? 'Elegí tu email y una clave de al menos 6 caracteres.' : 'Con el email y la clave del local.';
+    $('#aBtn').textContent = modoCrear ? 'Crear cuenta' : 'Entrar';
+    $('#aCambiar').textContent = modoCrear ? 'Ya tengo cuenta: entrar' : 'Todavía no tengo cuenta: crearla';
+    $('#aClave').autocomplete = modoCrear ? 'new-password' : 'current-password';
+  };
+  $('#fAcceso').onsubmit = async e => {
+    e.preventDefault();
+    const email = $('#aEmail').value.trim(), clave = $('#aClave').value;
+    $('#aBtn').disabled = true;
+    try {
+      if (modoCrear) {
+        const s = await Resto.crearCuenta(email, clave);
+        if (!s) { toast('Te mandamos un email para confirmar la cuenta. Después entrá con tu clave.'); $('#aCambiar').click(); return; }
+      } else await Resto.entrar(email, clave);
+      $('#aClave').value = '';
+      arrancar();
+    } catch (err) {
+      toast(/invalid login/i.test(err.message) ? 'Email o clave incorrectos' : err.message, true);
+    } finally { $('#aBtn').disabled = false; }
+  };
+  $('#spReclamar').onclick = () => intentar(() => Resto.reclamarDueno($('#spNombre').value.trim()), 'Listo, ya sos el dueño').then(arrancar).catch(() => {});
+  $('#spSalir').onclick = $('#salir').onclick = async () => { await Resto.salir(); if (Resto.modo === 'demo') return toast('En modo demo no hace falta salir'); arrancar(); };
+  $('#reiniciar').onclick = async () => { Resto.restablecerDemo(); await recargar(); cargarPedidos(); toast('Se restableció la carta de ejemplo'); };
+
+  /* ---------- pestañas ---------- */
+  $$('.tab').forEach(b => b.onclick = () => {
+    pestaña = b.dataset.t;
+    $$('.tab').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+    ['pedidos', 'carta', 'local'].forEach(t => $('#v-' + t).hidden = t !== pestaña);
+    if (pestaña === 'local') pintarLocal();
+    scrollTo(0, 0);
+  });
+
+  async function recargar(){
+    D = await Resto.cargar(); N = D.negocio;
+    document.documentElement.style.setProperty('--acento', N.tema.color);
+    $('#tNombre').textContent = N.nombre;
+    document.title = 'Panel · ' + N.nombre;
+    pintarCarta();
+    if (pestaña === 'local') pintarLocal();
+  }
+
+  /* ---------- pedidos ---------- */
+  $('#filtros').onclick = e => { const b = e.target.closest('[data-e]'); if (!b) return; filtro = b.dataset.e; $$('.filtro').forEach(x => x.setAttribute('aria-pressed', String(x === b))); cargarPedidos(); };
+  async function cargarPedidos(){
+    let lista, pend;
+    try { [lista, pend] = await Promise.all([Resto.pedidos(filtro || undefined), Resto.pedidos('pendiente')]); }
+    catch (e) { $('#pedidos').innerHTML = `<p class="vacio">No se pudieron cargar los pedidos: ${esc(e.message)}</p>`; return; }
+    const nuevos = pend.filter(p => !vistos.has(p.id));
+    if (!primera && nuevos.length) { toast(nuevos.length === 1 ? 'Entró un pedido nuevo' : `Entraron ${nuevos.length} pedidos nuevos`); campana(); }
+    pend.forEach(p => vistos.add(p.id)); primera = false;
+    $('#nPend').hidden = !pend.length; $('#nPend').textContent = pend.length;
+    document.title = (pend.length ? `(${pend.length}) ` : '') + 'Panel · ' + (N ? N.nombre : '');
+    $('#pedidos').innerHTML = lista.length ? lista.map(p => tarjetaPedido(p, nuevos.some(n => n.id === p.id))).join('') : `<p class="vacio" style="grid-column:1/-1">${filtro === 'pendiente' ? 'No hay pedidos pendientes. Los nuevos aparecen acá solos.' : 'No hay pedidos.'}</p>`;
+  }
+  function tarjetaPedido(p, nuevo){
+    const f = new Date(p.creado), hoy = new Date().toDateString() === f.toDateString();
+    const hora = (hoy ? '' : f.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit' }) + ' ') + f.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+    const tel = Resto.util.soloNumeros(p.telefono);
+    const acc = {
+      pendiente: `<button class="btn ok" data-a="aprobado" data-id="${p.id}">Aprobar</button><button class="btn mal" data-a="rechazado" data-id="${p.id}">Rechazar</button>`,
+      aprobado: `<button class="btn" data-a="entregado" data-id="${p.id}">Marcar entregado</button>`
+    }[p.estado] || '';
+    return `<article class="card ped${nuevo ? ' nuevo' : ''}">
+      <div class="l1"><span class="cod">#${esc(p.codigo)}</span><span class="est ${p.estado}">${p.estado}</span><span class="hora">${hora}</span></div>
+      <div class="meta"><span><b>${esc(p.cliente || 'Sin nombre')}</b>${tel ? ` · <a href="https://wa.me/${tel.length <= 10 ? '549' + tel : tel}" target="_blank" rel="noopener">${esc(p.telefono)}</a>` : ''}</span>
+        <span>${p.entrega === 'envio' ? 'Envío a ' + esc(p.direccion || '(sin dirección)') : 'Retira en el local'}</span>
+        ${p.pago ? `<span>Paga con ${esc(p.pago)}</span>` : ''}${p.notas ? `<span>Nota: ${esc(p.notas)}</span>` : ''}</div>
+      <ul>${(p.items || []).map(i => `<li><span>${i.cantidad} × ${esc(i.nombre)}${i.nota ? `<small>${esc(i.nota)}</small>` : ''}</span><span>${plata(i.precio * i.cantidad)}</span></li>`).join('')}</ul>
+      <div class="tot"><span>Total${Number(p.envio) ? ` (envío ${plata(p.envio)})` : ''}</span><span>${plata(p.total)}</span></div>
+      ${acc ? `<div class="acc">${acc}</div>` : ''}
+    </article>`;
+  }
+  $('#pedidos').onclick = async e => {
+    const b = e.target.closest('[data-a]'); if (!b) return;
+    b.disabled = true;
+    const txt = { aprobado: 'Pedido aprobado', rechazado: 'Pedido rechazado', entregado: 'Pedido entregado' }[b.dataset.a];
+    try { await intentar(() => Resto.cambiarEstado(b.dataset.id, b.dataset.a), txt); } catch (err) { b.disabled = false; return; }
+    if (b.dataset.a === 'aprobado') recargar();
+    cargarPedidos();
+  };
+  function campana(){
+    try { const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination); o.frequency.value = 880; g.gain.setValueAtTime(.12, c.currentTime); g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .6); o.start(); o.stop(c.currentTime + .6);
+    } catch (e) {}
+  }
+
+  /* ---------- carta ---------- */
+  function pintarCarta(){
+    const cats = D.categorias, sin = D.platos.filter(p => !cats.some(c => c.id === p.categoria_id));
+    const bloque = (c, ps, i) => `<div class="bloque">
+      <h3>${c ? esc(c.nombre) : 'Sin categoría'} <span class="chico">${ps.length} plato${ps.length === 1 ? '' : 's'}${c && c.visible === false ? ' · oculta' : ''}</span>
+        ${c ? `<span class="cat-acc">
+          <button class="ico" data-subir="${c.id}" ${i === 0 ? 'disabled' : ''} aria-label="Subir categoría">↑</button>
+          <button class="ico" data-bajar="${c.id}" ${i === cats.length - 1 ? 'disabled' : ''} aria-label="Bajar categoría">↓</button>
+          <button class="btn chico" data-ecat="${c.id}">Editar</button></span>` : ''}</h3>
+      <div class="filas">${ps.length ? ps.map(filaPlato).join('') : '<div class="fila" style="grid-template-columns:1fr"><small>Sin platos todavía.</small></div>'}</div></div>`;
+    $('#carta').innerHTML = (cats.length ? cats.map((c, i) => bloque(c, D.platos.filter(p => p.categoria_id === c.id), i)).join('') : '<p class="vacio">Empezá creando una categoría (por ejemplo "Pastas").</p>') + (sin.length ? bloque(null, sin) : '');
+  }
+  function filaPlato(p){
+    return `<div class="fila${p.disponible === false ? ' off' : ''}">
+      <div class="mini">${p.foto ? `<img src="${esc(p.foto)}" alt="" loading="lazy">` : 'Sin foto'}</div>
+      <div><b>${esc(p.nombre)}</b><small>${plata(p.precio)}${p.stock != null ? ` · stock ${p.stock}` : ''}${p.destacado ? ' · destacado' : ''}</small></div>
+      <label class="sw"><input type="checkbox" data-disp="${p.id}" ${p.disponible !== false ? 'checked' : ''}><span>Disponible</span></label>
+      <button class="btn chico edit" data-eplato="${p.id}">Editar</button></div>`;
+  }
+  $('#carta').addEventListener('change', async e => {
+    const id = e.target.dataset.disp; if (!id) return;
+    const p = D.platos.find(x => x.id === id);
+    try { await intentar(() => Resto.guardarPlato({ ...p, disponible: e.target.checked }), e.target.checked ? 'Disponible' : 'Marcado como agotado'); } catch (err) { e.target.checked = !e.target.checked; }
+    recargar();
+  });
+  $('#carta').addEventListener('click', async e => {
+    const t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.eplato) editarPlato(D.platos.find(p => p.id === t.dataset.eplato));
+    if (t.dataset.ecat) editarCategoria(D.categorias.find(c => c.id === t.dataset.ecat));
+    if (t.dataset.subir || t.dataset.bajar) {
+      const cats = [...D.categorias], i = cats.findIndex(c => c.id === (t.dataset.subir || t.dataset.bajar)), j = t.dataset.subir ? i - 1 : i + 1;
+      [cats[i], cats[j]] = [cats[j], cats[i]];
+      await intentar(() => Promise.all(cats.map((c, k) => c.orden === k + 1 ? null : Resto.guardarCategoria({ ...c, orden: k + 1 }))));
+      recargar();
+    }
+  });
+  $('#nuevoPlato').onclick = () => { if (!D.categorias.length) return toast('Primero creá una categoría', true); editarPlato(null); };
+  $('#nuevaCat').onclick = () => editarCategoria(null);
+
+  // ventana genérica
+  function ventana(titulo, cuerpo, { guardar, borrar }){
+    const v = $('#velo');
+    v.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-label="${esc(titulo)}"><div class="mc"><b>${esc(titulo)}</b><button class="ico" data-cerrar aria-label="Cerrar">✕</button></div>
+      <form class="mb form" id="fModal">${cuerpo}</form>
+      <div class="mf"><span>${borrar ? '<button class="btn mal" id="mBorrar" type="button">Borrar</button>' : ''}</span><span style="display:flex;gap:8px"><button class="btn" data-cerrar type="button">Cancelar</button><button class="btn pri" id="mGuardar">Guardar</button></span></div></div>`;
+    v.hidden = false; document.body.style.overflow = 'hidden';
+    setTimeout(() => { const f = v.querySelector('input,select,textarea'); if (f) f.focus(); }, 30);
+    const cerrar = () => { v.hidden = true; v.innerHTML = ''; document.body.style.overflow = ''; };
+    v.onclick = e => { if (e.target === v || e.target.closest('[data-cerrar]')) cerrar(); };
+    v.onkeydown = e => { if (e.key === 'Escape') cerrar(); };
+    const enviar = async e => {
+      if (e) e.preventDefault();
+      if (!$('#fModal').reportValidity()) return;
+      $('#mGuardar').disabled = true;
+      try { await guardar(new FormData($('#fModal'))); cerrar(); recargar(); } catch (err) { $('#mGuardar').disabled = false; }
+    };
+    $('#fModal').onsubmit = enviar; $('#mGuardar').onclick = enviar;
+    if (borrar) $('#mBorrar').onclick = () => {
+      const b = $('#mBorrar');
+      if (b.dataset.seguro) { borrar().then(() => { cerrar(); recargar(); }).catch(() => {}); return; }
+      b.dataset.seguro = '1'; b.textContent = '¿Seguro? Tocá de nuevo para borrar';
+    };
+  }
+
+  function editarCategoria(c){
+    ventana(c ? 'Editar categoría' : 'Nueva categoría', `
+      <label class="c">Nombre<input name="nombre" required maxlength="40" value="${esc(c ? c.nombre : '')}" placeholder="Ej: Pastas"></label>
+      <label class="sw"><input type="checkbox" name="visible" ${!c || c.visible !== false ? 'checked' : ''}> Se ve en la carta</label>`,
+    {
+      guardar: fd => intentar(() => Resto.guardarCategoria({ ...(c || {}), nombre: fd.get('nombre').trim(), visible: fd.get('visible') === 'on', orden: c ? c.orden : D.categorias.length + 1 }), 'Categoría guardada'),
+      borrar: c && (() => intentar(() => Resto.borrarCategoria(c.id), 'Categoría borrada. Sus platos quedaron en "Sin categoría".'))
+    });
+  }
+
+  function editarPlato(p){
+    let foto = p ? p.foto || '' : '';
+    ventana(p ? 'Editar plato' : 'Nuevo plato', `
+      <div class="foto-campo"><div class="prev" id="mPrev">${foto ? `<img src="${esc(foto)}" alt="">` : 'Sin foto'}</div>
+        <div style="display:grid;gap:6px"><label class="btn chico">Subir foto<input type="file" accept="image/*" class="sr" id="mFoto"></label><button type="button" class="btn chico mal" id="mQuitar">Quitar foto</button></div></div>
+      <label class="c">Nombre<input name="nombre" required maxlength="80" value="${esc(p ? p.nombre : '')}"></label>
+      <label class="c">Descripción<textarea name="descripcion" maxlength="300">${esc(p ? p.descripcion : '')}</textarea></label>
+      <div class="dos">
+        <label class="c">Precio ($)<input name="precio" type="number" min="0" step="1" required value="${p ? p.precio : ''}"></label>
+        <label class="c">Categoría<select name="categoria_id">${D.categorias.map(c => `<option value="${c.id}" ${p && p.categoria_id === c.id ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('')}</select></label>
+      </div>
+      <div class="dos">
+        <label class="c">Stock <small>(vacío = no controlar)</small><input name="stock" type="number" min="0" step="1" value="${p && p.stock != null ? p.stock : ''}"></label>
+        <label class="c">Etiquetas <small>(separadas por coma)</small><input name="etiquetas" maxlength="120" value="${esc(p ? (p.etiquetas || []).join(', ') : '')}" placeholder="Vegetariano, Sin TACC, Picante"></label>
+      </div>
+      <div class="dos">
+        <label class="sw"><input type="checkbox" name="disponible" ${!p || p.disponible !== false ? 'checked' : ''}> Disponible</label>
+        <label class="sw"><input type="checkbox" name="destacado" ${p && p.destacado ? 'checked' : ''}> Destacado (sale arriba)</label>
+      </div>`,
+    {
+      guardar: fd => intentar(() => Resto.guardarPlato({ ...(p || {}), nombre: fd.get('nombre').trim(), descripcion: fd.get('descripcion').trim(), precio: fd.get('precio'),
+        categoria_id: fd.get('categoria_id'), stock: fd.get('stock'), etiquetas: fd.get('etiquetas').split(',').map(s => s.trim()).filter(Boolean),
+        disponible: fd.get('disponible') === 'on', destacado: fd.get('destacado') === 'on', foto, orden: p ? p.orden : D.platos.length + 1 }), 'Plato guardado'),
+      borrar: p && (() => intentar(() => Resto.borrarPlato(p.id), 'Plato borrado'))
+    });
+    $('#mFoto').onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      $('#mPrev').textContent = 'Subiendo…';
+      try { foto = await intentar(() => Resto.subirFoto(f)); $('#mPrev').innerHTML = `<img src="${esc(foto)}" alt="">`; }
+      catch (err) { $('#mPrev').innerHTML = foto ? `<img src="${esc(foto)}" alt="">` : 'Sin foto'; }
+    };
+    $('#mQuitar').onclick = () => { foto = ''; $('#mPrev').textContent = 'Sin foto'; };
+  }
+
+  /* ---------- el local ---------- */
+  const COLORES = ['#b4532a', '#c0392b', '#d97706', '#2f7d4a', '#1f6f78', '#2b5ea7', '#6b4ca5', '#1c1b19'];
+  let borrador = null;
+  function pintarLocal(){
+    borrador = JSON.parse(JSON.stringify(N));
+    const f = $('#fLocal');
+    for (const k of ['nombre','bajada','direccion','mapa','whatsapp','telefono','instagram','aviso','envios','pagos','costoEnvio','pedidoMinimo']) f.elements[k].value = borrador[k] ?? '';
+    f.elements.aceptaRetiro.checked = !!borrador.aceptaRetiro; f.elements.aceptaEnvios.checked = !!borrador.aceptaEnvios;
+    f.elements.modo.value = borrador.tema.modo; f.elements.fuente.value = borrador.tema.fuente;
+    pintarColores(); pintarImg('logo'); pintarImg('portada'); pintarTurnos();
+  }
+  function pintarColores(){
+    const c = borrador.tema.color;
+    $('#colores').innerHTML = COLORES.map(x => `<button type="button" style="background:${x}" data-col="${x}" aria-label="Color ${x}" aria-pressed="${x === c}"></button>`).join('') +
+      `<input type="color" id="colLibre" value="${c}" aria-label="Elegir otro color">`;
+  }
+  $('#colores').addEventListener('click', e => { const b = e.target.closest('[data-col]'); if (b) { borrador.tema.color = b.dataset.col; pintarColores(); } });
+  $('#colores').addEventListener('input', e => { if (e.target.id === 'colLibre') { borrador.tema.color = e.target.value; $$('#colores [data-col]').forEach(b => b.setAttribute('aria-pressed', 'false')); } });
+  function pintarImg(k){ const el = $(k === 'logo' ? '#prevLogo' : '#prevPortada'); el.innerHTML = borrador[k] ? `<img src="${esc(borrador[k])}" alt="">` : (k === 'logo' ? 'Sin logo' : 'Sin foto'); }
+  $('#fLocal').addEventListener('change', async e => {
+    const k = e.target.dataset.img; if (!k) return;
+    const f = e.target.files[0]; if (!f) return;
+    const el = $(k === 'logo' ? '#prevLogo' : '#prevPortada'); el.textContent = 'Subiendo…';
+    try { borrador[k] = await intentar(() => Resto.subirFoto(f, k === 'logo' ? 600 : 1800)); } catch (err) {}
+    pintarImg(k); e.target.value = '';
+  });
+  $('#fLocal').addEventListener('click', e => { const k = e.target.dataset.quitar; if (k) { borrador[k] = ''; pintarImg(k); } });
+
+  function pintarTurnos(){
+    $('#turnos').innerHTML = borrador.horarios.length ? borrador.horarios.map((h, i) => `<div class="turno">
+      <div class="dias">${[1,2,3,4,5,6,0].map(d => `<label><input type="checkbox" data-t="${i}" data-d="${d}" ${h.dias.includes(d) ? 'checked' : ''}><span>${DIAS_C[d]}</span></label>`).join('')}</div>
+      <label class="c">Desde<input type="time" data-t="${i}" data-k="desde" value="${esc(h.desde)}"></label>
+      <label class="c">Hasta<input type="time" data-t="${i}" data-k="hasta" value="${esc(h.hasta)}"></label>
+      <button type="button" class="ico" data-borrart="${i}" aria-label="Borrar horario">✕</button></div>`).join('') : '<small style="color:var(--ink-3)">Sin horarios cargados: la web no muestra si está abierto o cerrado.</small>';
+  }
+  $('#turnos').addEventListener('change', e => {
+    const i = e.target.dataset.t; if (i == null) return;
+    const h = borrador.horarios[i];
+    if (e.target.dataset.d != null) { const d = Number(e.target.dataset.d); h.dias = e.target.checked ? [...new Set([...h.dias, d])] : h.dias.filter(x => x !== d); }
+    if (e.target.dataset.k) h[e.target.dataset.k] = e.target.value;
+  });
+  $('#turnos').addEventListener('click', e => { const i = e.target.closest('[data-borrart]'); if (i) { borrador.horarios.splice(Number(i.dataset.borrart), 1); pintarTurnos(); } });
+  $('#masTurno').onclick = () => { borrador.horarios.push({ dias: [1,2,3,4,5], desde: '12:00', hasta: '15:00' }); pintarTurnos(); };
+
+  $('#fLocal').onsubmit = async e => {
+    e.preventDefault();
+    const f = e.target;
+    for (const k of ['nombre','bajada','direccion','mapa','whatsapp','telefono','instagram','aviso','envios','pagos']) borrador[k] = f.elements[k].value.trim();
+    borrador.costoEnvio = Number(f.elements.costoEnvio.value) || 0; borrador.pedidoMinimo = Number(f.elements.pedidoMinimo.value) || 0;
+    borrador.aceptaRetiro = f.elements.aceptaRetiro.checked; borrador.aceptaEnvios = f.elements.aceptaEnvios.checked;
+    borrador.tema.modo = f.elements.modo.value; borrador.tema.fuente = f.elements.fuente.value;
+    borrador.whatsapp = Resto.util.soloNumeros(borrador.whatsapp);
+    borrador.horarios = borrador.horarios.filter(h => h.dias.length && h.desde && h.hasta);
+    if (!borrador.aceptaRetiro && !borrador.aceptaEnvios) return toast('Elegí al menos retiro o envío', true);
+    $('#guardarLocal').disabled = true;
+    try { await intentar(() => Resto.guardarNegocio(borrador), 'Cambios guardados'); await recargar(); pintarLocal(); } catch (err) {}
+    $('#guardarLocal').disabled = false;
+  };
+  $('#darAcceso').onclick = () => {
+    const em = $('#accEmail').value.trim(); if (!em) return toast('Poné el email', true);
+    intentar(() => Resto.darAcceso(em, $('#accNombre').value.trim()), 'Listo, ya puede entrar').then(() => { $('#accEmail').value = $('#accNombre').value = ''; }).catch(() => {});
+  };
+
+  arrancar();
+})();
+</script>
+</body>
+</html>

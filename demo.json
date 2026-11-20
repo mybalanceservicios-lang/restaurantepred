@@ -1,0 +1,48 @@
+{
+  "negocio": {
+    "nombre": "Tu Restaurante",
+    "bajada": "Cocina casera para retirar o con envío",
+    "direccion": "Av. Siempreviva 742",
+    "mapa": "",
+    "telefono": "11 5555-5555",
+    "whatsapp": "",
+    "instagram": "",
+    "horarios": [
+      { "dias": [2, 3, 4, 5, 6, 0], "desde": "12:00", "hasta": "15:30" },
+      { "dias": [4, 5, 6], "desde": "20:00", "hasta": "23:30" }
+    ],
+    "aceptaRetiro": true,
+    "aceptaEnvios": true,
+    "costoEnvio": 1500,
+    "pedidoMinimo": 0,
+    "envios": "Hacemos envíos en un radio de 3 km. El costo se suma al total.",
+    "pagos": "Efectivo, Transferencia, Mercado Pago",
+    "aviso": "",
+    "tema": { "color": "#b4532a", "modo": "claro", "fuente": "moderna" }
+  },
+  "categorias": [
+    { "id": "c-entradas", "nombre": "Entradas", "orden": 1, "visible": true },
+    { "id": "c-principales", "nombre": "Principales", "orden": 2, "visible": true },
+    { "id": "c-pastas", "nombre": "Pastas", "orden": 3, "visible": true },
+    { "id": "c-postres", "nombre": "Postres", "orden": 4, "visible": true },
+    { "id": "c-bebidas", "nombre": "Bebidas", "orden": 5, "visible": true }
+  ],
+  "platos": [
+    { "id": "p-empanadas", "categoria_id": "c-entradas", "nombre": "Empanadas de carne cortada a cuchillo", "descripcion": "Horneadas, por unidad. Pedí la docena y te sale menos.", "precio": 1800, "etiquetas": [], "disponible": true, "stock": null, "destacado": true, "orden": 1 },
+    { "id": "p-provoleta", "categoria_id": "c-entradas", "nombre": "Provoleta a la parrilla", "descripcion": "Con orégano, ají molido y aceite de oliva.", "precio": 6500, "etiquetas": ["Vegetariano"], "disponible": true, "stock": null, "destacado": false, "orden": 2 },
+    { "id": "p-rabas", "categoria_id": "c-entradas", "nombre": "Rabas", "descripcion": "Con limón y salsa alioli.", "precio": 9800, "etiquetas": [], "disponible": true, "stock": 6, "destacado": false, "orden": 3 },
+    { "id": "p-milanesa", "categoria_id": "c-principales", "nombre": "Milanesa napolitana con papas", "descripcion": "De nalga, con salsa de tomate, jamón y muzzarella. Papas fritas caseras.", "precio": 12500, "etiquetas": [], "disponible": true, "stock": null, "destacado": true, "orden": 1 },
+    { "id": "p-bife", "categoria_id": "c-principales", "nombre": "Bife de chorizo con ensalada", "descripcion": "400 g a la parrilla, con ensalada mixta.", "precio": 16900, "etiquetas": ["Sin TACC"], "disponible": true, "stock": null, "destacado": true, "orden": 2 },
+    { "id": "p-pollo", "categoria_id": "c-principales", "nombre": "Pollo al verdeo con puré", "descripcion": "Suprema en salsa de crema y verdeo, con puré de papas.", "precio": 11800, "etiquetas": ["Sin TACC"], "disponible": true, "stock": null, "destacado": false, "orden": 3 },
+    { "id": "p-wok", "categoria_id": "c-principales", "nombre": "Wok de vegetales", "descripcion": "Vegetales salteados con arroz y salsa de soja.", "precio": 9500, "etiquetas": ["Vegano"], "disponible": true, "stock": null, "destacado": false, "orden": 4 },
+    { "id": "p-sorrentinos", "categoria_id": "c-pastas", "nombre": "Sorrentinos de jamón y queso", "descripcion": "Caseros, con la salsa que elijas: fileto, crema o mixta.", "precio": 10900, "etiquetas": [], "disponible": true, "stock": null, "destacado": true, "orden": 1 },
+    { "id": "p-noquis", "categoria_id": "c-pastas", "nombre": "Ñoquis de papa", "descripcion": "Con salsa bolognesa.", "precio": 9200, "etiquetas": [], "disponible": true, "stock": null, "destacado": false, "orden": 2 },
+    { "id": "p-lasagna", "categoria_id": "c-pastas", "nombre": "Lasaña de verdura", "descripcion": "Espinaca, ricota y salsa blanca gratinada.", "precio": 10400, "etiquetas": ["Vegetariano"], "disponible": false, "stock": null, "destacado": false, "orden": 3 },
+    { "id": "p-flan", "categoria_id": "c-postres", "nombre": "Flan casero con dulce de leche", "descripcion": "", "precio": 4200, "etiquetas": ["Sin TACC"], "disponible": true, "stock": null, "destacado": false, "orden": 1 },
+    { "id": "p-tiramisu", "categoria_id": "c-postres", "nombre": "Tiramisú", "descripcion": "Con café de especialidad y cacao amargo.", "precio": 5600, "etiquetas": [], "disponible": true, "stock": 4, "destacado": false, "orden": 2 },
+    { "id": "p-agua", "categoria_id": "c-bebidas", "nombre": "Agua mineral 500 ml", "descripcion": "Con o sin gas.", "precio": 1500, "etiquetas": [], "disponible": true, "stock": null, "destacado": false, "orden": 1 },
+    { "id": "p-gaseosa", "categoria_id": "c-bebidas", "nombre": "Gaseosa 500 ml", "descripcion": "Línea Coca-Cola.", "precio": 2000, "etiquetas": [], "disponible": true, "stock": null, "destacado": false, "orden": 2 },
+    { "id": "p-cerveza", "categoria_id": "c-bebidas", "nombre": "Cerveza artesanal 500 ml", "descripcion": "Rubia, roja o negra.", "precio": 3800, "etiquetas": [], "disponible": true, "stock": null, "destacado": false, "orden": 3 },
+    { "id": "p-vino", "categoria_id": "c-bebidas", "nombre": "Vino tinto Malbec 750 ml", "descripcion": "", "precio": 9000, "etiquetas": [], "disponible": true, "stock": null, "destacado": false, "orden": 4 }
+  ]
+}

@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="es-AR" data-modo="claro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carta</title>
+<meta name="description" content="Mirá la carta y hacé tu pedido.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  :root{
+    --acento:#b4532a;
+    --f-titulo:system-ui,sans-serif; --f-texto:system-ui,sans-serif;
+    --bg:#faf8f5; --bg-2:#f2eee8; --card:#ffffff; --ink:#1d1a17; --ink-2:#5b544c; --ink-3:#8b847b;
+    --line:#e7e1d8; --sombra:0 1px 2px rgba(30,20,10,.06),0 8px 24px rgba(30,20,10,.06);
+    --acento-suave:color-mix(in srgb,var(--acento) 12%,transparent);
+    --acento-tinta:color-mix(in srgb,var(--acento) 78%,#000);
+    --sobre-acento:#fff;
+    --head:60px; --wrap:1080px; --r:16px;
+    color-scheme:light;
+  }
+  [data-modo=oscuro]{
+    --bg:#121110; --bg-2:#1a1816; --card:#1f1c1a; --ink:#f3eee8; --ink-2:#c2b9ae; --ink-3:#8f877d;
+    --line:#2e2a26; --sombra:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    --acento-suave:color-mix(in srgb,var(--acento) 20%,transparent);
+    --acento-tinta:color-mix(in srgb,var(--acento) 70%,#fff);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-texto);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  img{display:block;max-width:100%}
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  a{color:inherit}
+  h1,h2,h3{font-family:var(--f-titulo);margin:0;line-height:1.1}
+  .wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 16px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  :focus-visible{outline:2px solid var(--acento);outline-offset:2px;border-radius:8px}
+  [hidden]{display:none!important}
+
+  /* cabecera */
+  .top{position:sticky;top:0;z-index:30;height:var(--head);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .top .wrap{height:100%;display:flex;align-items:center;gap:12px}
+  .marca{display:flex;align-items:center;gap:10px;text-decoration:none;min-width:0}
+  .marca img{height:36px;width:auto;max-width:120px;object-fit:contain}
+  .marca b{font:800 18px/1 var(--f-titulo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .estado{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink-2);white-space:nowrap}
+  .estado i{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+  .estado.si i{background:#1f9d55;box-shadow:0 0 0 3px rgba(31,157,85,.18)}
+  .estado.no i{background:#d64545}
+  .top .estado{margin-left:auto}
+  .btn-carro{display:flex;align-items:center;gap:8px;border:0;background:var(--acento);color:var(--sobre-acento);border-radius:999px;padding:9px 14px;font-weight:800;font-size:14px}
+  .btn-carro svg{width:18px;height:18px}
+  .btn-carro .n{background:rgba(0,0,0,.2);border-radius:99px;min-width:20px;height:20px;display:grid;place-items:center;font-size:12px;padding:0 5px}
+
+  /* portada */
+  .hero{position:relative;overflow:hidden;background:var(--bg-2)}
+  .hero .foto{position:absolute;inset:0;background-size:cover;background-position:center}
+  .hero .foto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.6))}
+  .hero .wrap{position:relative;padding-top:56px;padding-bottom:40px}
+  .hero.con-foto{color:#fff}
+  .hero.con-foto .bajada{color:rgba(255,255,255,.88)}
+  .hero .logo-g{height:72px;width:auto;max-width:200px;object-fit:contain;margin-bottom:16px}
+  .hero h1{font-size:clamp(34px,6vw,56px);font-weight:800;letter-spacing:-.02em}
+  .bajada{color:var(--ink-2);font-size:17px;margin:10px 0 0;max-width:46ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:7px 12px;border-radius:999px;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .hero.con-foto .chip{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(6px)}
+  .chip svg{width:15px;height:15px}
+  .aviso{background:var(--acento-suave);border:1px solid color-mix(in srgb,var(--acento) 30%,transparent);color:var(--ink);border-radius:12px;padding:12px 14px;font-weight:600;font-size:14.5px;margin-top:18px;max-width:640px}
+  .hero.con-foto .aviso{background:rgba(255,255,255,.92);color:#1d1a17}
+
+  /* destacados */
+  .sec{padding-top:28px}
+  .sec h2{font-size:22px;font-weight:800}
+  .rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,260px);gap:12px;overflow-x:auto;padding:14px 16px 6px;margin:0 -16px;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .rail::-webkit-scrollbar{display:none}
+  .dest{scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;text-align:left;padding:0;box-shadow:var(--sombra);display:flex;flex-direction:column}
+  .dest .ph{aspect-ratio:16/10}
+  .dest .bd{padding:12px 14px 14px}
+  .dest b{display:block;font-weight:700;font-size:15px;line-height:1.25}
+  .dest span{display:block;margin-top:6px;font-weight:800;color:var(--acento-tinta)}
+
+  /* barra de categorías */
+  .barra{position:sticky;top:var(--head);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin-top:24px}
+  .barra .wrap{display:flex;gap:10px;align-items:center;padding-top:10px;padding-bottom:10px}
+  .cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+  .cats::-webkit-scrollbar{display:none}
+  .cats a{flex:none;text-decoration:none;font-size:14px;font-weight:700;padding:7px 13px;border-radius:999px;color:var(--ink-2)}
+  .cats a.on{background:var(--ink);color:var(--bg)}
+  .buscar{position:relative;flex:none;width:230px}
+  .buscar input{width:100%;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 12px 8px 34px;font-size:14px}
+  .buscar svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-3)}
+
+  /* carta */
+  .carta{padding-bottom:40px}
+  .grupo{padding-top:26px;scroll-margin-top:calc(var(--head) + 64px)}
+  .grupo h2{font-size:24px;font-weight:800;margin-bottom:6px}
+  .lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+  .plato{display:grid;grid-template-columns:1fr 112px;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;text-align:left;width:100%;align-items:start;transition:border-color .15s,box-shadow .15s}
+  .plato:hover{border-color:color-mix(in srgb,var(--acento) 45%,var(--line));box-shadow:var(--sombra)}
+  .plato h3{font-family:var(--f-texto);font-size:16px;font-weight:700;line-height:1.25}
+  .plato p{margin:5px 0 0;color:var(--ink-2);font-size:14px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .plato .pie{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .precio{font-weight:800;font-size:16px}
+  .tag{font-size:11px;font-weight:800;letter-spacing:.02em;padding:3px 8px;border-radius:99px;background:var(--bg-2);color:var(--ink-2)}
+  .tag.bajo{background:#fff1e6;color:#a8470f}
+  [data-modo=oscuro] .tag.bajo{background:#3a2412;color:#ffb27a}
+  .plato .ph{width:112px;height:112px;border-radius:12px;position:relative}
+  .plato .mas{position:absolute;right:-6px;bottom:-6px;width:34px;height:34px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;box-shadow:var(--sombra);color:var(--acento-tinta);font-size:22px;font-weight:600;line-height:1}
+  .plato .cant{position:absolute;left:-6px;top:-6px;min-width:24px;height:24px;border-radius:99px;background:var(--acento);color:var(--sobre-acento);font-size:12.5px;font-weight:800;display:grid;place-items:center;padding:0 6px}
+  .plato.agotado{opacity:.55}
+  .plato.agotado .mas{display:none}
+  .ph{background:var(--bg-2);overflow:hidden;display:grid;place-items:center;color:color-mix(in srgb,var(--acento) 55%,var(--ink-3))}
+  .ph img{width:100%;height:100%;object-fit:cover}
+  .ph svg{width:42%;height:42%;opacity:.7}
+  .vacio{color:var(--ink-3);padding:30px 0}
+
+  /* info del local */
+  .info{background:var(--bg-2);border-top:1px solid var(--line);padding:44px 0}
+  .info .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
+  .caja{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+  .caja h3{font-size:13px;font-family:var(--f-texto);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+  .caja p{margin:0 0 6px;font-size:15px}
+  .horas{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px}
+  .horas span:nth-child(odd){color:var(--ink-2)}
+  .horas .hoy{font-weight:800;color:var(--ink)}
+  .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .lnk{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--bg)}
+  .lnk:hover{border-color:var(--acento)}
+  .mapa{margin-top:16px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);height:260px;background:var(--card)}
+  .mapa iframe{width:100%;height:100%;border:0}
+  footer{padding:26px 0 calc(110px + env(safe-area-inset-bottom));color:var(--ink-3);font-size:13px;text-align:center}
+
+  /* barra inferior del pedido (celular) */
+  .barra-pedido{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:35;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--acento);color:var(--sobre-acento);border:0;border-radius:14px;padding:14px 18px;font-weight:800;font-size:15.5px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:560px;margin:0 auto}
+  .barra-pedido .n{background:rgba(0,0,0,.2);border-radius:8px;padding:2px 8px;margin-right:8px}
+
+  /* hojas (detalle del plato y pedido) */
+  .velo{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+  .velo.on{opacity:1;pointer-events:auto}
+  .hoja{position:fixed;z-index:51;background:var(--card);color:var(--ink);display:flex;flex-direction:column;max-height:92vh;max-height:92svh;
+    left:50%;bottom:0;width:min(560px,100%);border-radius:20px 20px 0 0;transform:translate(-50%,105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);visibility:hidden}
+  .hoja.on{transform:translate(-50%,0);visibility:visible}
+  @media (min-width:821px){
+    .hoja{top:50%;bottom:auto;border-radius:20px;transform:translate(-50%,-46%);opacity:0;transition:transform .22s,opacity .22s}
+    .hoja.on{transform:translate(-50%,-50%);opacity:1}
+  }
+  .hoja .cab{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .hoja .cab b{font:800 20px/1.1 var(--f-titulo)}
+  .x{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;flex:none}
+  .hoja .cuerpo{overflow:auto;padding:16px 18px}
+  .hoja .pie-h{border-top:1px solid var(--line);padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+  .det-foto{aspect-ratio:16/10;border-radius:14px;margin-bottom:14px}
+  .det-foto svg{width:24%;height:24%}
+  .det h3{font-size:22px;font-weight:800}
+  .det p{color:var(--ink-2);margin:8px 0 0}
+  .det .x-flot{position:absolute;right:14px;top:14px;z-index:2}
+  label.campo{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--ink-2)}
+  .campo input,.campo textarea,.campo select{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-size:15px;color:var(--ink);width:100%}
+  .campo textarea{resize:vertical;min-height:64px}
+  .fila{display:flex;align-items:center;gap:12px}
+  .paso{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+  .paso button{width:42px;height:44px;border:0;background:none;font-size:20px;font-weight:700}
+  .paso span{min-width:28px;text-align:center;font-weight:800}
+  .principal{flex:1;border:0;border-radius:12px;background:var(--acento);color:var(--sobre-acento);font-weight:800;font-size:15.5px;padding:13px 16px;display:flex;justify-content:space-between;gap:10px}
+  .principal:disabled{opacity:.5;cursor:not-allowed}
+  .principal.wa{background:#1fa855;color:#fff;justify-content:center}
+  .item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .item b{font-weight:700}
+  .item small{grid-column:1;color:var(--ink-3)}
+  .item .paso{grid-row:1 / span 2;grid-column:2;align-self:center}
+  .item .paso button{width:34px;height:34px;font-size:17px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg-2);border-radius:12px;padding:4px}
+  .seg button{border:0;background:none;border-radius:9px;padding:9px;font-weight:700;font-size:14px;color:var(--ink-2)}
+  .seg button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:var(--sombra)}
+  .forms{display:grid;gap:12px;margin-top:16px}
+  .tot{display:grid;grid-template-columns:1fr auto;gap:4px;font-size:15px;margin-top:16px}
+  .tot .g{font-weight:800;font-size:17px}
+  .nota{font-size:13px;color:var(--ink-3);margin:0}
+  .alerta{background:#fff6e5;color:#7a4b00;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600}
+  [data-modo=oscuro] .alerta{background:#3a2c12;color:#ffd48a}
+  .ok{text-align:center;padding:20px 6px}
+  .ok .cod{font:800 40px/1 var(--f-titulo);letter-spacing:.12em;color:var(--acento-tinta);margin:12px 0}
+
+  /* asistente */
+  .ayuda{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:34;width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--card);box-shadow:var(--sombra);display:grid;place-items:center;color:var(--acento-tinta)}
+  .ayuda svg{width:24px;height:24px}
+  body:not(.con-pedido) .ayuda{bottom:calc(20px + env(safe-area-inset-bottom))}
+  .chat{display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:86%;padding:10px 13px;border-radius:14px;font-size:15px;line-height:1.4;white-space:pre-line}
+  .msg.yo{align-self:flex-end;background:var(--acento);color:var(--sobre-acento);border-bottom-right-radius:4px}
+  .msg.el{align-self:flex-start;background:var(--bg-2);border-bottom-left-radius:4px}
+  .msg a{font-weight:800}
+  .sug{display:flex;flex-wrap:wrap;gap:6px}
+  .sug button{border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:6px 11px;font-size:13px;font-weight:700}
+  .preg{display:flex;gap:8px}
+  .preg input{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px}
+  .preg button{border:0;border-radius:10px;background:var(--acento);color:var(--sobre-acento);font-weight:800;padding:0 14px}
+
+  .toast{position:fixed;left:50%;top:calc(var(--head) + 12px);transform:translate(-50%,-10px);z-index:80;background:var(--ink);color:var(--bg);font-weight:700;font-size:14px;padding:11px 16px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;max-width:calc(100vw - 32px);text-align:center}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .demo{background:#1d1a17;color:#f3eee8;font-size:13px;font-weight:600;text-align:center;padding:7px 12px}
+  .demo a{color:#ffd48a}
+
+  @media (max-width:820px){
+    .top .estado span{display:none}
+    .lista{grid-template-columns:1fr}
+    .info .grid{grid-template-columns:1fr}
+    .buscar{width:42px}
+    .buscar input{padding-left:30px;color:transparent;cursor:pointer}
+    .buscar input::placeholder{color:transparent}
+    .buscar.abierta{position:absolute;left:16px;right:16px;width:auto;z-index:2}
+    .buscar.abierta input{color:var(--ink);cursor:text}
+    .buscar.abierta input::placeholder{color:var(--ink-3)}
+    .plato{grid-template-columns:1fr 96px}
+    .plato .ph{width:96px;height:96px}
+    .hero .wrap{padding-top:36px;padding-bottom:30px}
+  }
+  @media (min-width:821px){ .barra-pedido{left:auto;right:24px;bottom:24px;width:360px;margin:0} .ayuda{right:24px;bottom:96px} body:not(.con-pedido) .ayuda{bottom:24px} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .hoja,.velo,.toast{transition:none} }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="datos.js"></script>
+</head>
+<body>
+<div class="demo" id="demo" hidden>Modo demo: esta carta es de ejemplo. <a href="admin.html">Probá el panel del dueño</a></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="marca" href="#" id="marca"><b>…</b></a>
+    <span class="estado" id="estado"><i></i><span></span></span>
+    <button class="btn-carro" id="btnCarro" aria-label="Ver pedido">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      <span class="n" id="nCarro">0</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <div class="foto" id="heroFoto" hidden></div>
+    <div class="wrap">
+      <img class="logo-g" id="heroLogo" alt="" hidden>
+      <h1 id="nombre"></h1>
+      <p class="bajada" id="bajada"></p>
+      <div class="chips" id="chips"></div>
+      <div class="aviso" id="aviso" hidden></div>
+    </div>
+  </section>
+
+  <div class="wrap sec" id="secDest" hidden>
+    <h2>Los más pedidos</h2>
+    <div class="rail" id="destacados"></div>
+  </div>
+
+  <nav class="barra" aria-label="Categorías">
+    <div class="wrap">
+      <div class="cats" id="cats"></div>
+      <label class="buscar" id="buscar"><span class="sr">Buscar en la carta</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Buscar en la carta" autocomplete="off">
+      </label>
+    </div>
+  </nav>
+
+  <div class="wrap carta" id="carta"><p class="vacio">Cargando la carta…</p></div>
+
+  <section class="info" id="info">
+    <div class="wrap">
+      <h2>Dónde y cuándo</h2>
+      <div class="grid">
+        <div class="caja"><h3>Horarios</h3><div class="horas" id="horas"></div></div>
+        <div class="caja" id="cajaDonde"><h3>Dirección</h3><p id="dir"></p><div class="links" id="lnkDonde"></div></div>
+        <div class="caja"><h3>Pedidos</h3><p id="txtEntrega"></p><p id="txtPagos" class="nota"></p><div class="links" id="lnkContacto"></div></div>
+      </div>
+      <div class="mapa" id="mapa" hidden></div>
+    </div>
+  </section>
+</main>
+<footer><span id="pie"></span></footer>
+
+<button class="barra-pedido" id="barraPedido" hidden><span><span class="n" id="nBarra">0</span>Ver pedido</span><span id="totBarra">$0</span></button>
+<button class="ayuda" id="btnAyuda" aria-label="Preguntas frecuentes">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5A8 8 0 1 1 21 12Z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1v.5"/><circle cx="12" cy="16.5" r=".6" fill="currentColor"/></svg>
+</button>
+
+<div class="velo" id="velo"></div>
+
+<!-- detalle del plato -->
+<section class="hoja" id="hojaPlato" role="dialog" aria-modal="true" aria-label="Detalle del plato">
+  <div class="cuerpo det" id="detCuerpo" style="position:relative"></div>
+  <div class="pie-h">
+    <label class="campo">Aclaración (opcional)<input id="detNota" maxlength="200" placeholder="Ej: sin cebolla, bien cocido"></label>
+    <div class="fila">
+      <div class="paso"><button id="detMenos" aria-label="Uno menos">−</button><span id="detCant">1</span><button id="detMas" aria-label="Uno más">+</button></div>
+      <button class="principal" id="detAgregar"><span>Agregar</span><span id="detTotal"></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- pedido -->
+<section class="hoja" id="hojaPedido" role="dialog" aria-modal="true" aria-labelledby="tPedido">
+  <div class="cab"><b id="tPedido">Tu pedido</b><button class="x" data-cerrar aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="cuerpo" id="pedCuerpo"></div>
+  <div class="pie-h" id="pedPie"></div>
+</section>
+
+<!-- asistente -->
+<section class="hoja" id="hojaAyuda" role="dialog" aria-modal="true" aria-labelledby="tAyuda">
+  <div class="cab"><b id="tAyuda">¿En qué te ayudamos?</b><button class="x" data-cerrar aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="cuerpo"><div class="chat" id="chat"></div></div>
+  <div class="pie-h">
+    <div class="sug" id="sug"></div>
+    <form class="preg" id="preg"><input id="pregTxt" placeholder="Escribí tu pregunta" autocomplete="off" aria-label="Tu pregunta"><button>Enviar</button></form>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const { plata, esc, normal, soloNumeros, horarioTexto, estadoAhora, aplicarTema, DIAS } = Resto.util;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let N, CATS = [], PLATOS = [], query = '';
+  const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
+
+  const ICONO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M3 4v5a2 2 0 0 0 2 2v9M5 4v5M21 4c-1.7 0-3 2-3 5s1.3 3 3 3v8"/></svg>';
+  const foto = (p, cls = 'ph') => `<div class="${cls}">${p.foto ? `<img src="${esc(p.foto)}" alt="" loading="lazy">` : ICONO}</div>`;
+
+  /* ---------- carga ---------- */
+  async function cargar(){
+    try {
+      const d = await Resto.cargar();
+      N = d.negocio;
+      CATS = d.categorias.filter(c => c.visible !== false);
+      PLATOS = d.platos.filter(p => CATS.some(c => c.id === p.categoria_id));
+      pintar();
+    } catch (e) {
+      $('#carta').innerHTML = `<p class="vacio">No se pudo cargar la carta (${esc(e.message)}). Probá recargar la página.</p>`;
+    }
+  }
+
+  function pintar(){
+    aplicarTema(N.tema);
+    document.title = N.nombre + (N.bajada ? ' · ' + N.bajada : '');
+    $('#demo').hidden = Resto.modo !== 'demo';
+    $('#marca').innerHTML = N.logo ? `<img src="${esc(N.logo)}" alt="${esc(N.nombre)}">` : `<b>${esc(N.nombre)}</b>`;
+    $('#nombre').textContent = N.nombre;
+    $('#bajada').textContent = N.bajada || '';
+    $('#heroLogo').hidden = !N.logo; if (N.logo) $('#heroLogo').src = N.logo;
+    $('#heroFoto').hidden = !N.portada; $('#hero').classList.toggle('con-foto', !!N.portada);
+    if (N.portada) $('#heroFoto').style.backgroundImage = `url("${N.portada.replace(/"/g, '%22')}")`;
+    $('#aviso').hidden = !N.aviso; $('#aviso').textContent = N.aviso || '';
+    pintarEstado(); pintarChips(); pintarDestacados(); pintarCats(); pintarCarta(); pintarInfo(); pintarCarro();
+    $('#pie').textContent = `© ${new Date().getFullYear()} ${N.nombre}`;
+  }
+
+  function pintarEstado(){
+    const e = estadoAhora(N.horarios);
+    $('#estado').className = 'estado' + (e.abierto === true ? ' si' : e.abierto === false ? ' no' : '');
+    $('#estado span').textContent = e.abierto === true ? 'Abierto' : e.abierto === false ? 'Cerrado' : '';
+    $('#estado').hidden = e.abierto == null;
+    return e;
+  }
+  function pintarChips(){
+    const e = estadoAhora(N.horarios), c = [];
+    const ic = {
+      reloj: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+      bolsa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
+      moto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h6l-3-7H8M15 10h3l2 4"/></svg>'
+    };
+    if (e.texto) c.push(`<span class="chip">${ic.reloj}${esc(e.texto)}</span>`);
+    if (N.aceptaRetiro) c.push(`<span class="chip">${ic.bolsa}Retiro en el local</span>`);
+    if (N.aceptaEnvios) c.push(`<span class="chip">${ic.moto}Envío${Number(N.costoEnvio) ? ' ' + plata(N.costoEnvio) : ' sin cargo'}</span>`);
+    $('#chips').innerHTML = c.join('');
+  }
+  function pintarDestacados(){
+    const ds = PLATOS.filter(p => p.destacado && p.disponible !== false).slice(0, 10);
+    $('#secDest').hidden = !ds.length;
+    $('#destacados').innerHTML = ds.map(p => `<button class="dest" data-p="${p.id}">${foto(p)}<div class="bd"><b>${esc(p.nombre)}</b><span>${plata(p.precio)}</span></div></button>`).join('');
+  }
+  function pintarCats(){
+    const usadas = CATS.filter(c => PLATOS.some(p => p.categoria_id === c.id));
+    $('#cats').innerHTML = usadas.map((c, i) => `<a href="#g-${c.id}" data-c="${c.id}" class="${i ? '' : 'on'}">${esc(c.nombre)}</a>`).join('');
+  }
+  function pintarCarta(){
+    const q = normal(query);
+    const html = CATS.map(c => {
+      const ps = PLATOS.filter(p => p.categoria_id === c.id && (!q || normal(p.nombre + ' ' + (p.descripcion || '') + ' ' + (p.etiquetas || []).join(' ')).includes(q)));
+      if (!ps.length) return '';
+      return `<section class="grupo" id="g-${c.id}"><h2>${esc(c.nombre)}</h2><div class="lista">${ps.map(tarjeta).join('')}</div></section>`;
+    }).join('');
+    $('#carta').innerHTML = html || `<p class="vacio">${q ? 'No encontramos nada con esa búsqueda.' : 'Todavía no hay platos cargados.'}</p>`;
+    observarGrupos();
+  }
+  function tarjeta(p){
+    const agot = p.disponible === false || p.stock === 0;
+    const enCarro = carro.filter(i => i.id === p.id).reduce((s, i) => s + i.cantidad, 0);
+    const tags = [
+      agot ? '<span class="tag">Agotado</span>' : (p.stock != null && p.stock <= 5 ? `<span class="tag bajo">Quedan ${p.stock}</span>` : ''),
+      ...(p.etiquetas || []).map(t => `<span class="tag">${esc(t)}</span>`)
+    ].join('');
+    return `<button class="plato${agot ? ' agotado' : ''}" data-p="${p.id}" ${agot ? 'aria-disabled="true"' : ''}>
+      <div><h3>${esc(p.nombre)}</h3>${p.descripcion ? `<p>${esc(p.descripcion)}</p>` : ''}<div class="pie"><span class="precio">${plata(p.precio)}</span>${tags}</div></div>
+      <div class="ph">${p.foto ? `<img src="${esc(p.foto)}" alt="" loading="lazy">` : ICONO}${enCarro ? `<span class="cant">${enCarro}</span>` : ''}<span class="mas" aria-hidden="true">+</span></div>
+    </button>`;
+  }
+
+  // resalta la categoría que se está viendo
+  let io;
+  function observarGrupos(){
+    if (io) io.disconnect();
+    io = new IntersectionObserver(es => {
+      const v = es.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (!v) return;
+      const id = v.target.id.slice(2);
+      document.querySelectorAll('#cats a').forEach(a => {
+        const on = a.dataset.c === id; a.classList.toggle('on', on);
+        if (on) a.scrollIntoView({ block:'nearest', inline:'center', behavior: reduce ? 'auto' : 'smooth' });
+      });
+    }, { rootMargin: '-130px 0px -60% 0px' });
+    document.querySelectorAll('.grupo').forEach(g => io.observe(g));
+  }
+
+  function pintarInfo(){
+    const hoy = new Date().getDay();
+    const filas = horarioTexto(N.horarios);
+    $('#horas').innerHTML = N.horarios.length ? filas.map(f => {
+      const esHoy = f.incluye.includes(hoy);
+      return `<span class="${esHoy ? 'hoy' : ''}">${esc(f.dias)}</span><span class="${esHoy ? 'hoy' : ''}">${esc(f.horas)}</span>`;
+    }).join('') : '<span>Consultanos</span><span></span>';
+    $('#cajaDonde').hidden = !N.direccion;
+    $('#dir').textContent = N.direccion || '';
+    const mapaUrl = N.mapa || (N.direccion ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(N.direccion) : '');
+    $('#lnkDonde').innerHTML = mapaUrl ? `<a class="lnk" href="${esc(mapaUrl)}" target="_blank" rel="noopener">Cómo llegar</a>` : '';
+    $('#mapa').hidden = !N.direccion;
+    if (N.direccion) $('#mapa').innerHTML = `<iframe title="Mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${encodeURIComponent(N.direccion)}&output=embed"></iframe>`;
+    const ent = [N.aceptaRetiro && 'retiro en el local', N.aceptaEnvios && 'envío a domicilio'].filter(Boolean);
+    $('#txtEntrega').textContent = ent.length ? 'Hacemos ' + ent.join(' y ') + '.' + (N.envios ? ' ' + N.envios : '') : 'Consultanos por WhatsApp.';
+    $('#txtPagos').textContent = N.pagos ? 'Formas de pago: ' + N.pagos : '';
+    const wa = soloNumeros(N.whatsapp), l = [];
+    if (wa) l.push(`<a class="lnk" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a>`);
+    if (N.telefono) l.push(`<a class="lnk" href="tel:${soloNumeros(N.telefono)}">Llamar</a>`);
+    if (N.instagram) l.push(`<a class="lnk" href="https://instagram.com/${esc(N.instagram.replace(/^@/, ''))}" target="_blank" rel="noopener">Instagram</a>`);
+    $('#lnkContacto').innerHTML = l.join('');
+  }
+
+  /* ---------- buscador ---------- */
+  $('#q').addEventListener('input', e => { query = e.target.value.trim(); pintarCarta(); });
+  $('#q').addEventListener('focus', () => $('#buscar').classList.add('abierta'));
+  $('#q').addEventListener('blur', () => { if (!$('#q').value) $('#buscar').classList.remove('abierta'); });
+
+  /* ---------- hojas ---------- */
+  let abierta = null, foco = null;
+  function abrir(id){
+    if (abierta) cerrar(true);
+    foco = document.activeElement; abierta = $(id);
+    abierta.classList.add('on'); $('#velo').classList.add('on');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => { const f = abierta && abierta.querySelector('input:not([type=hidden]),button'); if (f && matchMedia('(min-width:821px)').matches) f.focus(); }, 50);
+  }
+  function cerrar(sinFoco){
+    if (!abierta) return;
+    abierta.classList.remove('on'); $('#velo').classList.remove('on'); abierta = null;
+    document.body.style.overflow = '';
+    if (!sinFoco && foco) foco.focus({ preventScroll:true });
+  }
+  $('#velo').onclick = () => cerrar();
+  document.addEventListener('click', e => { if (e.target.closest('[data-cerrar]')) cerrar(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+
+  /* ---------- detalle del plato ---------- */
+  let det = null, detCant = 1;
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-p]'); if (!b) return;
+    const p = PLATOS.find(x => x.id === b.dataset.p); if (!p) return;
+    if (p.disponible === false || p.stock === 0) { toast('Este plato no está disponible ahora'); return; }
+    det = p; detCant = 1; $('#detNota').value = '';
+    $('#detCuerpo').innerHTML = `<button class="x x-flot" data-cerrar aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      ${foto(p, 'ph det-foto')}<h3>${esc(p.nombre)}</h3>${p.descripcion ? `<p>${esc(p.descripcion)}</p>` : ''}
+      <div class="pie" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><span class="precio">${plata(p.precio)}</span>${(p.etiquetas || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}${p.stock != null && p.stock <= 5 ? `<span class="tag bajo">Quedan ${p.stock}</span>` : ''}</div>`;
+    pintarDet(); abrir('#hojaPlato');
+  });
+  function pintarDet(){ $('#detCant').textContent = detCant; $('#detTotal').textContent = plata(det.precio * detCant); }
+  $('#detMenos').onclick = () => { detCant = Math.max(1, detCant - 1); pintarDet(); };
+  $('#detMas').onclick = () => { const tope = det.stock != null ? det.stock : 99; if (detCant < tope) { detCant++; pintarDet(); } else toast('No hay más unidades'); };
+  $('#detAgregar').onclick = () => {
+    const nota = $('#detNota').value.trim();
+    const ya = carro.find(i => i.id === det.id && (i.nota || '') === nota);
+    if (ya) ya.cantidad += detCant; else carro.push({ id: det.id, cantidad: detCant, nota });
+    guardarCarro(); cerrar(); toast(`${det.nombre} agregado`);
+  };
+
+  /* ---------- pedido ---------- */
+  let carro = (store.get('restoCarro') || []).filter(i => i && i.id && i.cantidad > 0);
+  const datosCli = store.get('restoCliente') || {};
+  let entrega = 'retiro', enviando = false;
+  function guardarCarro(){ store.set('restoCarro', carro); pintarCarro(); pintarCarta(); pintarDestacados(); }
+  const platoDe = id => PLATOS.find(p => p.id === id);
+  function totales(){
+    carro = carro.filter(i => platoDe(i.id));
+    const sub = carro.reduce((s, i) => s + platoDe(i.id).precio * i.cantidad, 0);
+    const env = entrega === 'envio' ? Number(N.costoEnvio) || 0 : 0;
+    return { sub, env, tot: sub + env, n: carro.reduce((s, i) => s + i.cantidad, 0) };
+  }
+  function pintarCarro(){
+    if (!N) return;
+    const t = totales();
+    $('#nCarro').textContent = t.n; $('#nBarra').textContent = t.n; $('#totBarra').textContent = plata(t.sub);
+    $('#barraPedido').hidden = !t.n; document.body.classList.toggle('con-pedido', !!t.n);
+    if (abierta && abierta.id === 'hojaPedido' && !$('#pedCuerpo .ok')) pintarPedido();
+  }
+  function pintarPedido(){
+    if (!N.aceptaRetiro && entrega === 'retiro') entrega = 'envio';
+    if (!N.aceptaEnvios && entrega === 'envio') entrega = 'retiro';
+    const t = totales(), e = estadoAhora(N.horarios);
+    if (!t.n) {
+      $('#pedCuerpo').innerHTML = '<p class="vacio" style="text-align:center">Todavía no agregaste nada.<br>Tocá un plato para sumarlo.</p>';
+      $('#pedPie').innerHTML = ''; return;
+    }
+    const pagos = String(N.pagos || '').split(',').map(s => s.trim()).filter(Boolean);
+    $('#pedCuerpo').innerHTML = `
+      ${e.abierto === false ? `<p class="alerta">Ahora estamos cerrados (${esc(e.texto.toLowerCase())}). Podés mandar el pedido igual y te respondemos cuando abramos.</p>` : ''}
+      <div>${carro.map((i, k) => { const p = platoDe(i.id); return `<div class="item"><b>${esc(p.nombre)}</b>
+        <div class="paso"><button data-menos="${k}" aria-label="Uno menos">−</button><span>${i.cantidad}</span><button data-mas="${k}" aria-label="Uno más">+</button></div>
+        <small>${plata(p.precio * i.cantidad)}${i.nota ? ' · ' + esc(i.nota) : ''}</small></div>`; }).join('')}</div>
+      <div class="forms">
+        ${N.aceptaRetiro && N.aceptaEnvios ? `<div class="seg" role="group" aria-label="Entrega"><button data-ent="retiro" aria-pressed="${entrega === 'retiro'}">Retiro en el local</button><button data-ent="envio" aria-pressed="${entrega === 'envio'}">Envío a domicilio</button></div>` : ''}
+        <label class="campo">Tu nombre<input id="fNombre" autocomplete="name" value="${esc(datosCli.nombre || '')}" maxlength="80"></label>
+        <label class="campo">Teléfono<input id="fTel" type="tel" autocomplete="tel" inputmode="tel" value="${esc(datosCli.telefono || '')}" maxlength="40"></label>
+        ${entrega === 'envio' ? `<label class="campo">Dirección de entrega<input id="fDir" autocomplete="street-address" value="${esc(datosCli.direccion || '')}" maxlength="200" placeholder="Calle, número, piso, entre calles"></label>` : ''}
+        ${pagos.length ? `<label class="campo">¿Cómo pagás?<select id="fPago">${pagos.map(p => `<option ${p === datosCli.pago ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select></label>` : ''}
+        <label class="campo">Notas para el local (opcional)<textarea id="fNotas" maxlength="500" placeholder="Ej: tocar timbre 3B, traer cambio de $10.000"></textarea></label>
+        <input id="fWeb" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </div>
+      <div class="tot"><span>Subtotal</span><span>${plata(t.sub)}</span>${entrega === 'envio' ? `<span>Envío</span><span>${t.env ? plata(t.env) : 'Sin cargo'}</span>` : ''}<span class="g">Total</span><span class="g">${plata(t.tot)}</span></div>`;
+    const min = Number(N.pedidoMinimo) || 0, falta = min && t.sub < min;
+    $('#pedPie').innerHTML = `${falta ? `<p class="alerta">El pedido mínimo es de ${plata(min)}.</p>` : ''}
+      <button class="principal wa" id="enviar" ${falta ? 'disabled' : ''}>Enviar pedido por WhatsApp</button>
+      <p class="nota">Te confirmamos el pedido y el tiempo de entrega por WhatsApp.</p>`;
+  }
+  $('#pedCuerpo').addEventListener('click', e => {
+    const m = e.target.closest('[data-menos]'), p = e.target.closest('[data-mas]'), en = e.target.closest('[data-ent]');
+    if (m) { const i = carro[m.dataset.menos]; i.cantidad--; if (i.cantidad <= 0) carro.splice(m.dataset.menos, 1); guardarCarro(); }
+    if (p) { const i = carro[p.dataset.mas], pl = platoDe(i.id); if (pl.stock == null || i.cantidad < pl.stock) { i.cantidad++; guardarCarro(); } else toast('No hay más unidades'); }
+    if (en) { recordarDatos(); entrega = en.dataset.ent; pintarPedido(); }
+  });
+  function recordarDatos(){
+    const v = id => { const el = $(id); return el ? el.value.trim() : undefined; };
+    for (const [k, id] of [['nombre','#fNombre'],['telefono','#fTel'],['direccion','#fDir'],['pago','#fPago']]) { const x = v(id); if (x !== undefined) datosCli[k] = x; }
+    store.set('restoCliente', datosCli);
+  }
+  $('#pedPie').addEventListener('click', async e => {
+    if (!e.target.closest('#enviar') || enviando) return;
+    if ($('#fWeb').value) return; // campo trampa para robots
+    recordarDatos();
+    if (!datosCli.nombre) { toast('Poné tu nombre'); $('#fNombre').focus(); return; }
+    if (entrega === 'envio' && !datosCli.direccion) { toast('Falta la dirección de entrega'); $('#fDir').focus(); return; }
+    const wa = soloNumeros(N.whatsapp);
+    if (!wa && Resto.modo !== 'demo') { toast('El local todavía no cargó su WhatsApp. Llamanos' + (N.telefono ? ' al ' + N.telefono : '')); return; }
+    // se abre la pestaña antes de esperar a la base, así el navegador no la bloquea
+    const win = wa ? window.open('', '_blank') : null;
+    enviando = true; $('#enviar').disabled = true; $('#enviar').textContent = 'Enviando…';
+    try {
+      const notas = $('#fNotas').value.trim();
+      const r = await Resto.crearPedido({ items: carro.map(i => ({ id: i.id, cantidad: i.cantidad, nota: i.nota || '' })), cliente: datosCli.nombre, telefono: datosCli.telefono || '', entrega, direccion: entrega === 'envio' ? datosCli.direccion : '', pago: datosCli.pago || '', notas });
+      const lineas = carro.map(i => { const p = platoDe(i.id); return `• ${i.cantidad} x ${p.nombre}${i.nota ? ` (${i.nota})` : ''}`; });
+      const msg = [`Hola! Te hago un pedido (#${r.codigo}):`, ...lineas, '',
+        `Total: ${plata(r.total)}${r.envio ? ` (incluye envío ${plata(r.envio)})` : ''}`,
+        `Entrega: ${entrega === 'envio' ? 'Envío a ' + datosCli.direccion : 'Retiro en el local'}`,
+        datosCli.pago ? `Pago: ${datosCli.pago}` : '', `Nombre: ${datosCli.nombre}`, notas ? `Notas: ${notas}` : ''].filter(Boolean).join('\n');
+      if (win) win.location.href = `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`;
+      carro = []; guardarCarro(); cargar();
+      $('#pedCuerpo').innerHTML = `<div class="ok"><p>¡Listo! Tu número de pedido es</p><div class="cod">#${esc(r.codigo)}</div>
+        <p class="nota">${wa ? 'Se abrió WhatsApp con el pedido: tocá enviar para que nos llegue.' : 'Modo demo: el pedido quedó guardado y lo podés ver en el panel del dueño.'}</p></div>`;
+      $('#pedPie').innerHTML = `<button class="principal" data-cerrar style="justify-content:center">Volver a la carta</button>`;
+    } catch (err) {
+      if (win) win.close();
+      toast(err.message || 'No se pudo enviar el pedido');
+      cargar(); pintarPedido();
+    } finally { enviando = false; }
+  });
+  const abrirPedido = () => { pintarPedido(); abrir('#hojaPedido'); };
+  $('#btnCarro').onclick = abrirPedido; $('#barraPedido').onclick = abrirPedido;
+
+  /* ---------- asistente ---------- */
+  const SUG = ['¿Están abiertos?', '¿Dónde están?', '¿Hacen envíos?', '¿Cómo pago?', '¿Qué me recomendás?', '¿Tienen opciones sin TACC?'];
+  function decir(txt, quien){ const d = document.createElement('div'); d.className = 'msg ' + quien; d.innerHTML = txt; $('#chat').appendChild(d); d.scrollIntoView({ block:'end' }); }
+  function responder(preg){
+    const q = normal(preg), wa = soloNumeros(N.whatsapp);
+    const derivar = wa ? `Para eso escribinos por <a href="https://wa.me/${wa}?text=${encodeURIComponent(preg)}" target="_blank" rel="noopener">WhatsApp</a> y te respondemos.` : (N.telefono ? `Para eso llamanos al ${esc(N.telefono)}.` : 'Para eso consultanos en el local.');
+    const e = estadoAhora(N.horarios);
+    const hs = () => horarioTexto(N.horarios).map(f => `${f.dias}: ${f.horas}`).join('\n');
+    if (/abiert|cerrad|horari|hora|abren|cierran|atienden|dias/.test(q)) return (e.abierto === true ? `Sí, estamos abiertos. ${e.texto}.` : e.abierto === false ? `Ahora estamos cerrados. ${e.texto}.` : '') + (N.horarios.length ? `\n\nNuestros horarios:\n${hs()}` : '');
+    if (/donde|direcc|ubicac|llegar|local|queda/.test(q)) return N.direccion ? `Estamos en ${esc(N.direccion)}.` : derivar;
+    if (/envio|delivery|domicilio|mandan|llevan|reparto/.test(q)) return N.aceptaEnvios ? `Sí, hacemos envíos${Number(N.costoEnvio) ? ` (${plata(N.costoEnvio)})` : ' sin cargo'}. ${esc(N.envios || '')}` : `Por ahora no hacemos envíos: ${N.aceptaRetiro ? 'podés retirar tu pedido en el local.' : derivar}`;
+    if (/pag|tarjeta|efectivo|transfer|mercado|debito|credito/.test(q)) return N.pagos ? `Aceptamos: ${esc(N.pagos)}.` : derivar;
+    if (/recomend|rico|mejor|destac|especial|pedido/.test(q)) { const ds = PLATOS.filter(p => p.destacado && p.disponible !== false).slice(0, 4); return ds.length ? 'Los más pedidos:\n' + ds.map(p => `• ${esc(p.nombre)}: ${plata(p.precio)}`).join('\n') : derivar; }
+    if (/minimo/.test(q)) return Number(N.pedidoMinimo) ? `El pedido mínimo es de ${plata(N.pedidoMinimo)}.` : 'No hay pedido mínimo.';
+    if (/tacc|celia|gluten|vegan|vegetar|sin /.test(q)) {
+      const clave = /tacc|celia|gluten/.test(q) ? 'sin tacc' : /vegan/.test(q) ? 'vegano' : 'vegetariano';
+      const ps = PLATOS.filter(p => (p.etiquetas || []).some(t => normal(t).includes(clave)) && p.disponible !== false);
+      return ps.length ? `Opciones ${clave === 'sin tacc' ? 'sin TACC' : clave + 's'}:\n` + ps.map(p => `• ${esc(p.nombre)}: ${plata(p.precio)}`).join('\n') + (clave === 'sin tacc' ? '\n\nSi sos celíaco, avisanos en el pedido.' : '') : `No tenemos platos marcados así. ${derivar}`;
+    }
+    const palabras = q.split(/\s+/).filter(w => w.length > 2 && !['que','tienen','hay','cuanto','sale','precio','vale','cuesta','los','las','con','para','una','uno'].includes(w));
+    const enc = PLATOS.filter(p => palabras.some(w => normal(p.nombre + ' ' + (p.descripcion || '')).includes(w))).slice(0, 5);
+    if (enc.length) return enc.map(p => `• ${esc(p.nombre)}: ${plata(p.precio)}${p.disponible === false || p.stock === 0 ? ' (agotado)' : ''}`).join('\n');
+    return `No estoy seguro. ${derivar}`;
+  }
+  function preguntar(t){ if (!t) return; decir(esc(t), 'yo'); setTimeout(() => decir(responder(t), 'el'), 250); }
+  $('#btnAyuda').onclick = () => {
+    if (!$('#chat').children.length) decir(`¡Hola! Soy el asistente de ${esc(N ? N.nombre : 'el local')}. Preguntame por horarios, envíos, pagos o cualquier plato.`, 'el');
+    $('#sug').innerHTML = SUG.map(s => `<button type="button">${s}</button>`).join('');
+    abrir('#hojaAyuda');
+  };
+  $('#sug').onclick = e => { const b = e.target.closest('button'); if (b) preguntar(b.textContent); };
+  $('#preg').onsubmit = e => { e.preventDefault(); preguntar($('#pregTxt').value.trim()); $('#pregTxt').value = ''; };
+
+  let tt;
+  function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2600); }
+
+  setInterval(() => { if (N) { pintarEstado(); pintarChips(); } }, 60000);
+  if (Resto.modo === 'demo') Resto.cambiosDemo(cargar);
+  cargar();
+})();
+</script>
+</body>
+</html>
